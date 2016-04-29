@@ -9,16 +9,24 @@ import dbclass
 expectxmldir = os.getcwd() + '/testdir/except/'
 realxmldir = os.getcwd() + '/testdir/real/'
 
-def run(interface_name , suiteid ,checkmethod = 1,method = "GET"): 
+def run(interface_name , suiteid ,checkmethod = 1,method = "GET"):
+    '''运行用例'''
+    #打印信息
     print '   '+interface_name+'   '+' test start'
-    #�ӿڷ���ֵ������
+    #读取指定的文件格式
     return_method = excelobj.read_data(suiteid,2,12).upper()  #JSON
     print 'return_method:',return_method
+
+    #返回内容格式
     content_type = excelobj.read_data(suiteid,2,13) #json
     print 'content_type:',content_type
+
     is_teardown = excelobj.read_data(suiteid,2,14)
+    #关键字，指定的判断对象
     check_key = excelobj.read_data(suiteid,4,13)   #goldenId
     print 'check_key:',check_key
+
+    #预期个实际值得存放位置
     global expectxmldir , realxmldir
     expectdir = expectxmldir + interface_name.strip()
     realdir = realxmldir + interface_name.strip()
@@ -66,14 +74,14 @@ def run(interface_name , suiteid ,checkmethod = 1,method = "GET"):
                         if type(data) == list:
                             for x in range(0,lens):
                                 flag = 0
-                                real_json = data[x][check_key]
+                                real_json = data[x][check_key]  #取goldenID值
                                 global exp
                                 exp = excelobj.read_data(suiteid, excelobj.casebegin + caseid, 12)
-                                if real_json == exp:
+                                if real_json == exp:   #和预期值进行对比
                                     ret3 = checkResult(excelobj, suiteid, caseid, real_json,excelobj.exp_data_col)
                                     flag = 1
                                     break
-                            if flag == 0:
+                            if flag == 0:  #即返回值和预期不一致
                                 ret3 = 'NG' 
                         else:
                             real_json = data[check_key]
@@ -93,7 +101,7 @@ def run(interface_name , suiteid ,checkmethod = 1,method = "GET"):
                 realpath = realdir+'/'+str(caseid+1)+'.json'
                 save_xml_file(realpath, xmlstring)
             elif return_method == 'bool'.upper():
-                result_code = resp['status']
+                result_code = resp['status']  #状态
                 ret1 = checkResult(excelobj, suiteid, caseid, result_code, excelobj.retCol)
                 expectpath = expectdir + '/' + str(caseid+1)+'.json'
                 if checkmethod =='save' :
